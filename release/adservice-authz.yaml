@@ -1,0 +1,43 @@
+apiVersion: security.istio.io/v1
+kind: AuthorizationPolicy
+metadata:
+  name: adservice-authz
+  namespace: default
+spec:
+  action: ALLOW
+  selector:
+    matchLabels:
+      app: adservice
+  rules:
+    # Allow frontend to access GetAds method
+    - from:
+        - source:
+            principals:
+              - "cluster.local/ns/default/sa/frontend"
+      to:
+        - operation:
+            ports: ["9555"]
+            methods: ["POST"]
+            paths: [
+              "/hipstershop.AdService/GetAds"
+            ]
+
+apiVersion: security.istio.io/v1
+kind: PeerAuthentication
+metadata:
+  name: adservice-peer-auth
+  namespace: default
+spec:
+  mtls:
+    mode: PERMISSIVE
+
+apiVersion: networking.istio.io/v1
+kind: DestinationRule
+metadata:
+  name: adservice-destination-rule
+  namespace: default
+spec:
+  host: adservice.default.svc.cluster.local
+  trafficPolicy:
+    tls:
+      mode: ISTIO_MUTUAL

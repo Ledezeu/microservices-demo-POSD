@@ -1,0 +1,49 @@
+apiVersion: security.istio.io/v1
+kind: AuthorizationPolicy
+metadata:
+  name: productcatalogservice-authz
+  namespace: default
+spec:
+  action: ALLOW
+  selector:
+    matchLabels:
+      app: productcatalogservice
+  rules:
+    # Allow recommendations to access all methods of ProductCatalogService
+    - from:
+        - source:
+            principals:
+              - "cluster.local/ns/default/sa/recommendationservice"
+              - "cluster.local/ns/default/sa/frontend"
+              - "cluster.local/ns/default/sa/checkoutservice"
+      to:
+        - operation:
+            ports: ["3550"]  # gRPC port
+            methods: ["POST"]  # gRPC typically uses POST
+            paths: [
+              "/hipstershop.ProductCatalogService/ListProducts",
+              "/hipstershop.ProductCatalogService/GetProduct",
+              "/hipstershop.ProductCatalogService/SearchProducts"
+            ]
+
+apiVersion: security.istio.io/v1
+kind: PeerAuthentication
+metadata:
+  name: productcatalogservice-peer-auth
+  namespace: default
+spec:
+  mtls:
+    mode: PERMISSIVE
+
+
+apiVersion: networking.istio.io/v1
+kind: DestinationRule
+metadata:
+  name: productcatalogservice-destination-rule
+  namespace: default
+spec:
+  host: productcatalogservice.default.svc.cluster.local
+  trafficPolicy:
+    tls:
+      mode: ISTIO_MUTUAL
+

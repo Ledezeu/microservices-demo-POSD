@@ -1,0 +1,45 @@
+apiVersion: security.istio.io/v1
+kind: AuthorizationPolicy
+metadata:
+  name: currencyservice-authz
+  namespace: default
+spec:
+  action: ALLOW
+  selector:
+    matchLabels:
+      app: currencyservice
+  rules:
+    # Allow frontend to access GetSupportedCurrencies and Convert methods
+    - from:
+        - source:
+            principals:
+              - "cluster.local/ns/default/sa/frontend"
+              - "cluster.local/ns/default/sa/checkoutservice"
+      to:
+        - operation:
+            ports: ["7000"]
+            methods: ["POST"]
+            paths: [
+              "/hipstershop.CurrencyService/GetSupportedCurrencies",
+              "/hipstershop.CurrencyService/Convert"
+            ]
+
+apiVersion: security.istio.io/v1
+kind: PeerAuthentication
+metadata:
+  name: currencyservice-peer-auth
+  namespace: default
+spec:
+  mtls:
+    mode: PERMISSIVE
+
+apiVersion: networking.istio.io/v1
+kind: DestinationRule
+metadata:
+  name: currencyservice-destination-rule
+  namespace: default
+spec:
+  host: currencyservice.default.svc.cluster.local
+  trafficPolicy:
+    tls:
+      mode: ISTIO_MUTUAL

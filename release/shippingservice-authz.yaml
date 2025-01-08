@@ -1,0 +1,42 @@
+apiVersion: security.istio.io/v1
+kind: AuthorizationPolicy
+metadata:
+  name: shippingservice-authz
+  namespace: default
+spec:
+  action: ALLOW
+  selector:
+    matchLabels:
+      app: shippingservice
+  rules:
+    # Allow frontend to access GetQuote and ShipOrder
+    - from:
+        - source:
+            principals:
+              - "cluster.local/ns/default/sa/frontend"
+              - "cluster.local/ns/default/sa/checkoutservice"
+      to:
+        - operation:
+            ports: ["50051"]
+            methods: ["POST"]
+            paths: ["/hipstershop.ShippingService/GetQuote", "/hipstershop.ShippingService/ShipOrder"]
+
+apiVersion: security.istio.io/v1
+kind: PeerAuthentication
+metadata:
+  name: shippingservice-peer-auth
+  namespace: default
+spec:
+  mtls:
+    mode: PERMISSIVE
+
+apiVersion: networking.istio.io/v1
+kind: DestinationRule
+metadata:
+  name: shippingservice-destination-rule
+  namespace: default
+spec:
+  host: shippingservice.default.svc.cluster.local
+  trafficPolicy:
+    tls:
+      mode: ISTIO_MUTUAL

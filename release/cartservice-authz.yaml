@@ -1,0 +1,52 @@
+apiVersion: security.istio.io/v1
+kind: AuthorizationPolicy
+metadata:
+  name: cartservice-authz
+  namespace: default
+spec:
+  action: ALLOW
+  selector:
+    matchLabels:
+      app: cartservice
+  rules:
+    # Allow frontend to access GetCart and AddItem
+    - from:
+        - source:
+            principals:
+              - "cluster.local/ns/default/sa/frontend"
+      to:
+        - operation:
+            ports: ["7070"]
+            methods: ["POST"]
+            paths: ["/hipstershop.CartService/AddItem", "/hipstershop.CartService/GetCart"]
+
+    # Allow checkoutservice to access EmptyCart
+    - from:
+        - source:
+            principals:
+              - "cluster.local/ns/default/sa/checkoutservice"
+      to:
+        - operation:
+            ports: ["7070"]
+            methods: ["POST"]
+            paths: ["/hipstershop.CartService/EmptyCart"]
+
+apiVersion: security.istio.io/v1
+kind: PeerAuthentication
+metadata:
+  name: cartservice-peer-auth
+  namespace: default
+spec:
+  mtls:
+    mode: PERMISSIVE
+
+apiVersion: networking.istio.io/v1
+kind: DestinationRule
+metadata:
+  name: cartservice-destination-rule
+  namespace: default
+spec:
+  host: cartservice.default.svc.cluster.local
+  trafficPolicy:
+    tls:
+      mode: ISTIO_MUTUAL

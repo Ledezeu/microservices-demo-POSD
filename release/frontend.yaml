@@ -1,0 +1,19 @@
+apiVersion: security.istio.io/v1
+kind: PeerAuthentication
+metadata:
+  name: frontend-peer-auth
+  namespace: default
+spec:
+  mtls:
+    mode: PERMISSIVE
+
+apiVersion: networking.istio.io/v1
+kind: DestinationRule
+metadata:
+  name: frontend-destination-rule
+  namespace: default
+spec:
+  host: frontend.default.svc.cluster.local
+  trafficPolicy:
+    tls:
+      mode: ISTIO_MUTUAL
