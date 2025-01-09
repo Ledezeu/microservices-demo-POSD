@@ -1,0 +1,15 @@
+http://127.0.0.1 # status 200
+
+kubectl apply -f .\microservices-demo\release\frontend-jwt-auth.yaml
+
+#dupa apply trebuie asteptat putin 
+http://127.0.0.1 # RBAC: access denied
+
+$env:TOKEN = gcloud auth print-identity-token
+echo $env:TOKEN
+
+$TOKEN = gcloud auth print-identity-token
+
+$headers = @{Authorization = "Bearer $TOKEN" }
+
+Invoke-WebRequest -Uri "http://127.0.0.1" -Headers $headers # status 200
