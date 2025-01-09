@@ -1,0 +1,37 @@
+apiVersion: extensions.istio.io/v1alpha1
+kind: WasmPlugin
+metadata:
+  name: istio-classify-grpc-req
+spec:
+  selector:
+    matchLabels:
+      app: cartservice
+  url: https://storage.googleapis.com/istio-build/proxy/attributegen-359dcd3a19f109c50e97517fe6b1e2676e870c4d.wasm
+  imagePullPolicy: Always
+  phase: AUTHN
+  pluginConfig:
+    attributes:
+      - output_attribute: "istio_operationId"
+        match:
+          - value: "AddItem"
+            condition: "request.grpc_service == 'hipstershop.CartService' && request.grpc_method == 'AddItem'"
+          - value: "GetCart"
+            condition: "request.grpc_service == 'hipstershop.CartService' && request.grpc_method == 'GetCart'"
+          - value: "EmptyCart"
+            condition: "request.grpc_service == 'hipstershop.CartService' && request.grpc_method == 'EmptyCart'"
+---
+apiVersion: telemetry.istio.io/v1
+kind: Telemetry
+metadata:
+  name: grpc-custom-tags
+spec:
+  metrics:
+    - overrides:
+        - match:
+            metric: REQUEST_COUNT
+            mode: CLIENT_AND_SERVER
+          tagOverrides:
+            request_operation:
+              value: istio_operationId
+      providers:
+        - name: prometheus

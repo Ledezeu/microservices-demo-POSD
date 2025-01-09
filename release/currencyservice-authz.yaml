@@ -19,10 +19,11 @@ spec:
         - operation:
             ports: ["7000"]
             methods: ["POST"]
-            paths: [
-              "/hipstershop.CurrencyService/GetSupportedCurrencies",
-              "/hipstershop.CurrencyService/Convert"
-            ]
+            paths:
+              [
+                "/hipstershop.CurrencyService/GetSupportedCurrencies",
+                "/hipstershop.CurrencyService/Convert",
+              ]
 
 apiVersion: security.istio.io/v1
 kind: PeerAuthentication
@@ -31,7 +32,7 @@ metadata:
   namespace: default
 spec:
   mtls:
-    mode: PERMISSIVE
+    mode: STRICT
 
 apiVersion: networking.istio.io/v1
 kind: DestinationRule

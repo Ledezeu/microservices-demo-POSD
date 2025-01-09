@@ -18,9 +18,7 @@ spec:
         - operation:
             ports: ["9555"]
             methods: ["POST"]
-            paths: [
-              "/hipstershop.AdService/GetAds"
-            ]
+            paths: ["/hipstershop.AdService/GetAds"]
 
 apiVersion: security.istio.io/v1
 kind: PeerAuthentication
@@ -29,7 +27,7 @@ metadata:
   namespace: default
 spec:
   mtls:
-    mode: PERMISSIVE
+    mode: STRICT
 
 apiVersion: networking.istio.io/v1
 kind: DestinationRule

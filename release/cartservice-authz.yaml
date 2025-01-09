@@ -38,7 +38,7 @@ metadata:
   namespace: default
 spec:
   mtls:
-    mode: PERMISSIVE
+    mode: STRICT
 
 apiVersion: networking.istio.io/v1
 kind: DestinationRule

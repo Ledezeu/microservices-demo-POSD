@@ -18,10 +18,8 @@ spec:
         - operation:
             ports: ["5050"]
             methods: ["POST"]
-            paths: [
-              "/hipstershop.CheckoutService/PlaceOrder"
-            ]
-
+            paths: ["/hipstershop.CheckoutService/PlaceOrder"]
+  
 apiVersion: security.istio.io/v1
 kind: PeerAuthentication
 metadata:
@@ -29,9 +27,7 @@ metadata:
   namespace: default
 spec:
   mtls:
-    mode: PERMISSIVE
-
-
+    mode: STRICT
 
 apiVersion: networking.istio.io/v1
 kind: DestinationRule

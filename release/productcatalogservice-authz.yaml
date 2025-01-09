@@ -18,13 +18,14 @@ spec:
               - "cluster.local/ns/default/sa/checkoutservice"
       to:
         - operation:
-            ports: ["3550"]  # gRPC port
-            methods: ["POST"]  # gRPC typically uses POST
-            paths: [
-              "/hipstershop.ProductCatalogService/ListProducts",
-              "/hipstershop.ProductCatalogService/GetProduct",
-              "/hipstershop.ProductCatalogService/SearchProducts"
-            ]
+            ports: ["3550"] # gRPC port
+            methods: ["POST"] # gRPC typically uses POST
+            paths:
+              [
+                "/hipstershop.ProductCatalogService/ListProducts",
+                "/hipstershop.ProductCatalogService/GetProduct",
+                "/hipstershop.ProductCatalogService/SearchProducts",
+              ]
 
 apiVersion: security.istio.io/v1
 kind: PeerAuthentication
@@ -33,8 +34,7 @@ metadata:
   namespace: default
 spec:
   mtls:
-    mode: PERMISSIVE
-
+    mode: STRICT
 
 apiVersion: networking.istio.io/v1
 kind: DestinationRule
