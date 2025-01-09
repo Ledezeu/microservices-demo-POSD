@@ -14,3 +14,27 @@ spec:
               value: "string(destination.port)"
             request_host:
               value: "request.host"
+            source_workload:
+              value: "source.workload.name"
+            source_namespace:
+              value: "source.workload.namespace"
+            destination_workload:
+              value: "destination.workload.name"
+            destination_namespace:
+              value: "destination.workload.namespace"
+        - match:
+            metric: REQUEST_DURATION
+          tagOverrides:
+            destination_workload:
+              value: "destination.workload.name"
+            method:
+              value: "request.method"
+            protocol:
+              value: "context.protocol"
+        - match:
+            metric: RESPONSE_SIZE
+          tagOverrides:
+            response_code:
+              value: "response.code"
+            source_workload:
+              value: "source.workload.name"
